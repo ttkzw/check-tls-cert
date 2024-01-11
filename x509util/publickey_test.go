@@ -16,7 +16,7 @@ func TestExtractPublicKey(t *testing.T) {
 
 	privKeyFile := "../test/testdata/pki/private/server-a-rsa.pem"
 	certFile := "../test/testdata/pki/cert/valid/server-a-rsa.pem"
-	certs, _ := x509util.ParseCertificateFiles(certFile)
+	certs, _ := x509util.ParseCertificateFile(certFile)
 	pubKeyInfo, _ := x509util.ExtractPublicKeyFromCertificate(certs[0])
 	privKeyInfo, _ := x509util.ParsePrivateKeyFile(privKeyFile, nil)
 	pubKeyInfoInPrivKey, _ := x509util.ExtractPublicKeyFromPrivateKey(privKeyInfo)
@@ -30,7 +30,7 @@ func TestExtractPublicKey(t *testing.T) {
 
 	privKeyFile = "../test/testdata/pki/private/server-a-ecdsa.pem"
 	certFile = "../test/testdata/pki/cert/valid/server-a-ecdsa.pem"
-	certs, _ = x509util.ParseCertificateFiles(certFile)
+	certs, _ = x509util.ParseCertificateFile(certFile)
 	pubKeyInfo, _ = x509util.ExtractPublicKeyFromCertificate(certs[0])
 	privKeyInfo, _ = x509util.ParsePrivateKeyFile(privKeyFile, nil)
 	pubKeyInfoInPrivKey, _ = x509util.ExtractPublicKeyFromPrivateKey(privKeyInfo)
@@ -44,7 +44,7 @@ func TestExtractPublicKey(t *testing.T) {
 
 	privKeyFile = "../test/testdata/pki/private/server-a-ed25519.pem"
 	certFile = "../test/testdata/pki/cert/valid/server-a-ed25519.pem"
-	certs, _ = x509util.ParseCertificateFiles(certFile)
+	certs, _ = x509util.ParseCertificateFile(certFile)
 	pubKeyInfo, _ = x509util.ExtractPublicKeyFromCertificate(certs[0])
 	privKeyInfo, _ = x509util.ParsePrivateKeyFile(privKeyFile, nil)
 	pubKeyInfoInPrivKey, _ = x509util.ExtractPublicKeyFromPrivateKey(privKeyInfo)

@@ -4,24 +4,67 @@
 
 package x509util
 
-import "bytes"
+import (
+	"crypto/x509"
+	"encoding/pem"
+)
 
-func ContainsPEMCertificate(data []byte) bool {
-	return bytes.Contains(data, []byte("-----BEGIN CERTIFICATE-----"))
+func ExtractPEMBlocks(data []byte) []*pem.Block {
+	var blocks []*pem.Block
+	for len(data) > 0 {
+		block, rest := pem.Decode(data)
+		data = rest
+		if block == nil {
+			break
+		}
+		if block.Type == "" {
+			continue
+		}
+		blocks = append(blocks, block)
+	}
+	return blocks
 }
 
-func ContainsPEMPrivateKey(data []byte) bool {
-	pemTypes := []string{
-		"-----BEGIN RSA PRIVATE KEY-----",
-		"-----BEGIN EC PRIVATE KEY-----",
-		"-----BEGIN PRIVATE KEY-----",
-		"-----BEGIN ENCRYPTED PRIVATE KEY-----",
+func IsPrivateKeyPEMBlock(block *pem.Block) bool {
+	switch block.Type {
+	case "RSA PRIVATE KEY":
+		return true
+	case "EC PRIVATE KEY":
+		return true
+	case "PRIVATE KEY":
+		return true
+	case "ENCRYPTED PRIVATE KEY":
+		return true
+	default:
+	}
+	return false
+}
+
+func IsCertificatePEMBlock(block *pem.Block) bool {
+	switch block.Type {
+	case "CERTIFICATE":
+		return true
+	case "PKCS7":
+		return true
+	default:
+	}
+	return false
+}
+
+func IsEncryptedPEMBlock(block *pem.Block) bool {
+	switch block.Type {
+	case "RSA PRIVATE KEY":
+		//lint:ignore SA1019 Encrypted PEM files are still used.
+		return x509.IsEncryptedPEMBlock(block)
+	case "EC PRIVATE KEY":
+		//lint:ignore SA1019 Encrypted PEM files are still used.
+		return x509.IsEncryptedPEMBlock(block)
+	case "PRIVATE KEY":
+		return false
+	case "ENCRYPTED PRIVATE KEY":
+		return true
+	default:
 	}
 
-	for _, t := range pemTypes {
-		if bytes.Contains(data, []byte(t)) {
-			return true
-		}
-	}
 	return false
 }

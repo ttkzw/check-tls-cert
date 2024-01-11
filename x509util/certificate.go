@@ -15,76 +15,97 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"go.mozilla.org/pkcs7"
+	"software.sslmate.com/src/go-pkcs12"
 )
 
-// ParseCertificateFiles parses certifcate files in PEM format and returns certificates.
-func ParseCertificateFiles(certFiles ...string) (certs []*x509.Certificate, err error) {
-	for _, certFile := range certFiles {
-		if certFile == "" {
-			continue
-		}
-
-		data, err := os.ReadFile(certFile)
-		if err != nil {
-			return nil, err
-		}
-
-		if ContainsPEMCertificate(data) {
-			// PEM format
-			c, err := parsePEMCertificates(data)
-			if err == nil {
-				certs = append(certs, c...)
-			}
-		} else if ContainsPEMPrivateKey(data) {
-			// Skip
-		} else {
-			// DER format
-			c, err := x509.ParseCertificate(data)
-			if err == nil {
-				certs = append(certs, c)
-			}
-		}
-	}
-
-	if len(certs) == 0 {
-		return nil, fmt.Errorf("no valid certificates")
-	}
-
-	return certs, nil
-}
-
-// ParseCertificateFile parses a certifcate file in PEM format and returns the first certificate.
-func ParseCertificateFile(certFile string) (cert *x509.Certificate, err error) {
-	certs, err := ParseCertificateFiles(certFile)
+// ParseCertificateFile parses a certifcate file in PEM format and returns certificates.
+func ParseCertificateFile(certFile string) (certs []*x509.Certificate, err error) {
+	_, certs, err = ParseFile(certFile, nil, false, true)
 	if err != nil {
 		return nil, err
 	}
 	if len(certs) == 0 {
 		return nil, errors.New("no certificate")
 	}
-	return certs[0], nil
+	return certs, nil
 }
 
-func parsePEMCertificates(data []byte) (certs []*x509.Certificate, err error) {
-	for len(data) > 0 {
-		block, rest := pem.Decode(data)
-		data = rest
-		if block == nil {
-			break
-		}
+func ParseCertificatePEMBlock(block *pem.Block) (certs []*x509.Certificate, err error) {
+	var der = block.Bytes
 
-		if block.Type != "CERTIFICATE" {
-			continue
-		}
-
-		cert, err := x509.ParseCertificate(block.Bytes)
-		if err != nil {
-			return nil, err
-		}
+	switch block.Type {
+	case "CERTIFICATE":
+		var cert *x509.Certificate
+		cert, err = x509.ParseCertificate(der)
 		certs = append(certs, cert)
+	case "PKCS7":
+		certs, err = parsePKCS7(der)
+	default:
+		err = errors.New("certificate: unknown type")
 	}
 
+	return
+}
+
+func ParseCertificate(der []byte, password []byte, file string) (privKeyInfo PrivateKeyInfo, certs []*x509.Certificate, err error) {
+	var c *x509.Certificate
+	c, err = x509.ParseCertificate(der)
+	if err == nil {
+		certs = append(certs, c)
+		return
+	}
+
+	// CMS / PKCS #7 certificate chain format
+	certs, err = parsePKCS7(der)
+	if err == nil {
+		return
+	}
+
+	// PKCS #12
+	privKeyInfo, certs, err = parsePKCS12(der, password, file)
+	if err == nil {
+		return
+	}
+
+	return privKeyInfo, certs, nil
+}
+
+func parsePKCS7(data []byte) (certs []*x509.Certificate, err error) {
+	p7, err := pkcs7.Parse(data)
+	if err != nil {
+		return nil, err
+	}
+	certs = p7.Certificates
 	return certs, nil
+}
+
+func parsePKCS12(data []byte, password []byte, file string) (privKeyInfo PrivateKeyInfo, certs []*x509.Certificate, err error) {
+	if len(password) == 0 {
+		// Try to leave the password empty.
+		_, _, _, err = pkcs12.DecodeChain(data, "")
+		if err != nil && err == pkcs12.ErrIncorrectPassword {
+			// If failed, read the password.
+			password, err = readPassword(file)
+			if err != nil {
+				return privKeyInfo, certs, err
+			}
+		}
+	}
+
+	privKey, cert, caCerts, err := pkcs12.DecodeChain(data, string(password))
+	if err != nil {
+		return privKeyInfo, certs, err
+	}
+	certs = append(certs, cert)
+	certs = append(certs, caCerts...)
+
+	privKeyInfo = PrivateKeyInfo{
+		PublicKeyAlgorithm: x509.RSA,
+		Key:                privKey,
+	}
+	return privKeyInfo, certs, nil
 }
 
 // GetRootCertPool retrieves the root certificate pool.

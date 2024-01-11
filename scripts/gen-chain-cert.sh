@@ -54,3 +54,20 @@ cat ${VALID_CERT_DIR}/server-a-rsa.pem \
     ${VALID_CERT_DIR}/ca-intermediate-a-rsa.pem \
     ${PRIVATE_KEY_DIR}/server-a-rsa.pem \
     > ${CHAIN_CERT_DIR}/fullchain-a-rsa-private-key.pem
+
+# PKCS #7
+openssl crl2pkcs7 -nocrl -certfile ${VALID_CERT_DIR}/server-a-rsa.pem \
+    -certfile ${VALID_CERT_DIR}/ca-intermediate-a-rsa.pem \
+    -outform PEM -out ${VALID_CERT_DIR}/server-a-rsa.p7b
+
+openssl crl2pkcs7 -nocrl -certfile ${VALID_CERT_DIR}/server-a-rsa.pem \
+    -certfile ${VALID_CERT_DIR}/ca-intermediate-a-rsa.pem \
+    -outform DER -out ${VALID_CERT_DIR}/server-a-rsa-der.p7b
+
+# PKCS #12
+openssl pkcs12 -export -inkey ${PRIVATE_KEY_DIR}/server-a-rsa.pem \
+    -in ${VALID_CERT_DIR}/server-a-rsa.pem \
+    -certfile ${VALID_CERT_DIR}/ca-intermediate-a-rsa.pem \
+    -out ${VALID_CERT_DIR}/server-a-rsa.p12 \
+    -aes256 -passout file:${PRIVATE_KEY_DIR}/password.txt
+cp ${VALID_CERT_DIR}/server-a-rsa.p12 ${VALID_CERT_DIR}/server-a-rsa.pfx

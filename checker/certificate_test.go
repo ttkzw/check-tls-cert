@@ -17,8 +17,8 @@ import (
 
 func TestNewCertificateChecker(t *testing.T) {
 	var (
-		c          checker.Checker
-		serverCert *x509.Certificate
+		c           checker.Checker
+		serverCerts []*x509.Certificate
 	)
 	assert := assert.New(t)
 	w := strings.Builder{}
@@ -63,8 +63,8 @@ func TestNewCertificateChecker(t *testing.T) {
 	//                  36:3f
 	//             Exponent: 65537 (0x10001)
 	//
-	serverCert, _ = x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/server-a-rsa.pem")
-	c = checker.NewCertificateChecker(serverCert)
+	serverCerts, _ = x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/server-a-rsa.pem")
+	c = checker.NewCertificateChecker(serverCerts[0])
 
 	w.Reset()
 	c.PrintStatus()
@@ -106,8 +106,8 @@ func TestNewCertificateChecker(t *testing.T) {
 	//                  25:a7:5a:61:65:34:f8:cc:92:04:72:d4:5f:26:87:
 	//                  14:e2:48:64:d6
 	//             NIST CURVE: P-256
-	serverCert, _ = x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/server-a-ecdsa.pem")
-	c = checker.NewCertificateChecker(serverCert)
+	serverCerts, _ = x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/server-a-ecdsa.pem")
+	c = checker.NewCertificateChecker(serverCerts[0])
 
 	w.Reset()
 	c.PrintStatus()
@@ -146,8 +146,8 @@ func TestNewCertificateChecker(t *testing.T) {
 	//                  1d:84:84:80:3a:4f:0f:9a:d6:c7:77:73:8a:8d:c2:
 	//                  5e:1d:23:ab:a7:aa:a1:71:c1:cf:fd:26:6a:c8:ba:
 	//                  67:16
-	serverCert, _ = x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/server-a-ed25519.pem")
-	c = checker.NewCertificateChecker(serverCert)
+	serverCerts, _ = x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/server-a-ed25519.pem")
+	c = checker.NewCertificateChecker(serverCerts[0])
 
 	w.Reset()
 	c.PrintStatus()
@@ -176,11 +176,11 @@ func TestCertificateChecker(t *testing.T) {
 	checker.SetDNType(x509util.StrictDN)
 	checker.SetCurrentTime(time.Now())
 
-	serverCert, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/server-a-rsa.pem")
+	serverCerts, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/server-a-rsa.pem")
 
 	// verbose 1
 	checker.SetVerbose(1)
-	c := checker.NewCertificateChecker(serverCert)
+	c := checker.NewCertificateChecker(serverCerts[0])
 	assert.Equal("Certificate", c.Name())
 	assert.Equal(checker.INFO, c.Status())
 	assert.Equal("the certificate information is as follows", c.Message())
@@ -213,7 +213,7 @@ func TestCertificateChecker(t *testing.T) {
 
 	// verbose 2
 	checker.SetVerbose(2)
-	c = checker.NewCertificateChecker(serverCert)
+	c = checker.NewCertificateChecker(serverCerts[0])
 
 	w.Reset()
 	c.PrintDetails()

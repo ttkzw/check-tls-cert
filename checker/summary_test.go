@@ -30,7 +30,7 @@ func TestNewSummary(t *testing.T) {
 
 	// This certificate will expire in 365 days.
 	certFile := "../test/testdata/pki/cert/valid/server-a-rsa.pem"
-	certs, _ := x509util.ParseCertificateFiles(certFile)
+	certs, _ := x509util.ParseCertificateFile(certFile)
 	cert := certs[0]
 
 	// OK: the certificate will expire in 365 days on 2022-06-22 16:10:14 +0900
@@ -100,7 +100,7 @@ func TestSummary(t *testing.T) {
 	checker.SetCurrentTime(time.Now())
 
 	certFile := "../test/testdata/pki/cert/valid/server-a-rsa.pem"
-	certs, _ := x509util.ParseCertificateFiles(certFile)
+	certs, _ := x509util.ParseCertificateFile(certFile)
 	cert := certs[0]
 
 	c = checker.NewValidityChecker(cert, 0, 0)

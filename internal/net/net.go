@@ -66,7 +66,7 @@ func Run(opts NetCommandOptions) (int, error) {
 	checker.SetOutput(colorable.NewColorableStdout())
 
 	if opts.RootFile != "" {
-		rootCerts, err = x509util.ParseCertificateFiles(opts.RootFile)
+		rootCerts, err = x509util.ParseCertificateFile(opts.RootFile)
 		if err != nil {
 			return checker.UNKNOWN.Code(), err
 		}

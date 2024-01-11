@@ -39,7 +39,7 @@ func Run(opts FileCommandOptions) (int, error) {
 	checker.SetOutput(colorable.NewColorableStdout())
 
 	if opts.RootFile != "" {
-		rootCerts, err = x509util.ParseCertificateFiles(opts.RootFile)
+		rootCerts, err = x509util.ParseCertificateFile(opts.RootFile)
 		if err != nil {
 			return checker.UNKNOWN.Code(), err
 		}
@@ -50,10 +50,16 @@ func Run(opts FileCommandOptions) (int, error) {
 		return checker.UNKNOWN.Code(), err
 	}
 
-	certs, err := x509util.ParseCertificateFiles(opts.CertFile, opts.ChainFile)
+	certs, err := x509util.ParseCertificateFile(opts.CertFile)
 	if err != nil {
 		return checker.UNKNOWN.Code(), err
 	}
+
+	chainCerts, err := x509util.ParseCertificateFile(opts.ChainFile)
+	if err != nil {
+		return checker.UNKNOWN.Code(), err
+	}
+	certs = append(certs, chainCerts...)
 
 	if len(certs) == 0 {
 		return checker.UNKNOWN.Code(), errors.New("no valid certificates")
@@ -83,7 +89,7 @@ func Run(opts FileCommandOptions) (int, error) {
 	}
 
 	if opts.CAFile != "" {
-		_, err = x509util.ParseCertificateFiles(opts.CAFile)
+		_, err = x509util.ParseCertificateFile(opts.CAFile)
 		if err != nil {
 			return checker.UNKNOWN.Code(), err
 		}

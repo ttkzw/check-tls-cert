@@ -64,13 +64,13 @@ func TestNewCertificateFilesChecker(t *testing.T) {
 	w.Reset()
 	c.PrintStatus()
 	assert.Equal(checker.CRITICAL, c.Status())
-	assert.Contains(w.String(), "CRITICAL: no valid certificates")
+	assert.Contains(w.String(), "CRITICAL: no certificate")
 
 	w.Reset()
 	c.PrintDetails()
 	assert.Contains(w.String(), `    ERROR: Certificate File
         File: ../test/testdata/pki/misc/empty.pem
-        Error: no valid certificates`)
+        Error: no certificate`)
 
 	// Intermediate and root certificates not found
 	// Returns OK because the certificate path is not validated.

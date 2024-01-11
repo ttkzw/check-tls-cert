@@ -71,7 +71,6 @@ func init() {
 	fileCmd.Flags().StringVarP(&hostname, "hostname", "H", "", "`hostname` for verifying certificate. (required)")
 	fileCmd.MarkFlagRequired("hostname")
 	fileCmd.Flags().StringVarP(&keyFile, "key-file", "k", "", "private key `file`. (required)")
-	fileCmd.MarkFlagRequired("key-file")
 	fileCmd.Flags().StringVarP(&certFile, "cert-file", "f", "", "certificates `file`. It includes a server certificate and intermediate certificates. (required)")
 	fileCmd.MarkFlagRequired("cert-file")
 	fileCmd.Flags().StringVarP(&chainFile, "chain-file", "C", "", "certificate chain `file`. It includes intermediate certificates. Used for the SSLCertificateChainFile directive in old Apache HTTP Server.")

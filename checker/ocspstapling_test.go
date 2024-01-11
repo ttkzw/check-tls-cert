@@ -31,11 +31,14 @@ func TestNewOCSPStaplingChecker(t *testing.T) {
 	checker.SetCurrentTime(time.Now())
 
 	privKeyInfo, _ := x509util.ParsePrivateKeyFile("../test/testdata/pki/private/ca-intermediate-a-rsa-ocsp-responder.pem", nil)
-	responderCert, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/ca-intermediate-a-rsa-ocsp-responder.pem")
-	issuerCert, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/ca-intermediate-a-rsa.pem")
-	targetCert, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/server-a-rsa.pem")
+	responderCerts, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/ca-intermediate-a-rsa-ocsp-responder.pem")
+	responderCert := responderCerts[0]
+	issuerCerts, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/ca-intermediate-a-rsa.pem")
+	issuerCert := issuerCerts[0]
+	targetCerts, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/server-a-rsa.pem")
+	targetCert := targetCerts[0]
 	intermediateCerts := []*x509.Certificate{issuerCert}
-	rootCerts, _ := x509util.ParseCertificateFiles("../test/testdata/pki/root-ca/ca-root.pem")
+	rootCerts, _ := x509util.ParseCertificateFile("../test/testdata/pki/root-ca/ca-root.pem")
 	rootCertPool, _ := x509util.GetRootCertPool(rootCerts, false)
 
 	priv := privKeyInfo.Key.(*rsa.PrivateKey)
@@ -251,7 +254,8 @@ func TestNewOCSPStaplingChecker(t *testing.T) {
 	//                     00:fe:6b:e6:fc:5a:21:e3:34:74:24:cc:73:fb:d4:
 	//                     ...(omitted)
 	//                 Exponent: 65537 (0x10001)
-	responderCert, _ = x509util.ParseCertificateFile("../test/testdata/pki/cert/expired/ca-intermediate-a-rsa-ocsp-responder.pem")
+	responderCerts, _ = x509util.ParseCertificateFile("../test/testdata/pki/cert/expired/ca-intermediate-a-rsa-ocsp-responder.pem")
+	responderCert = responderCerts[0]
 	template = ocsp.Response{
 		SerialNumber: targetCert.SerialNumber,
 		Certificate:  responderCert,
@@ -290,11 +294,14 @@ func TestOCSPStaplingChecker(t *testing.T) {
 	checker.SetCurrentTime(time.Now())
 
 	privKeyInfo, _ := x509util.ParsePrivateKeyFile("../test/testdata/pki/private/ca-intermediate-a-rsa-ocsp-responder.pem", nil)
-	responderCert, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/ca-intermediate-a-rsa-ocsp-responder.pem")
-	issuerCert, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/ca-intermediate-a-rsa.pem")
-	targetCert, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/server-a-rsa.pem")
+	responderCerts, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/ca-intermediate-a-rsa-ocsp-responder.pem")
+	responderCert := responderCerts[0]
+	issuerCerts, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/ca-intermediate-a-rsa.pem")
+	issuerCert := issuerCerts[0]
+	targetCerts, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/server-a-rsa.pem")
+	targetCert := targetCerts[0]
 	intermediateCerts := []*x509.Certificate{issuerCert}
-	rootCerts, _ := x509util.ParseCertificateFiles("../test/testdata/pki/root-ca/ca-root.pem")
+	rootCerts, _ := x509util.ParseCertificateFile("../test/testdata/pki/root-ca/ca-root.pem")
 	rootCertPool, _ := x509util.GetRootCertPool(rootCerts, false)
 
 	priv := privKeyInfo.Key.(*rsa.PrivateKey)

@@ -96,18 +96,18 @@ func TestGetOCSPResponse(t *testing.T) {
 
 	// no OCSP responder
 
-	issuer, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/ca-intermediate-a-rsa.pem")
-	targetCert, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/server-a-rsa.pem")
+	issuers, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/ca-intermediate-a-rsa.pem")
+	targetCerts, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/server-a-rsa.pem")
 
 	_, _, err = ocsputil.GetOCSPResponse(nil, nil)
 	assert.NotNil(err)
 	assert.EqualError(err, "no server certificate")
 
-	_, _, err = ocsputil.GetOCSPResponse(targetCert, nil)
+	_, _, err = ocsputil.GetOCSPResponse(targetCerts[0], nil)
 	assert.NotNil(err)
 	assert.EqualError(err, "no issuer certificate")
 
-	_, _, err = ocsputil.GetOCSPResponse(targetCert, issuer)
+	_, _, err = ocsputil.GetOCSPResponse(targetCerts[0], issuers[0])
 	assert.NotNil(err)
 	assert.EqualError(err, "no OCSP server in certificate")
 
@@ -125,8 +125,8 @@ func TestGetOCSPResponse(t *testing.T) {
 	defer conn.Close()
 	connectionState := conn.ConnectionState()
 	certs := connectionState.PeerCertificates
-	targetCert = certs[0]
-	issuer = certs[1]
+	targetCert := certs[0]
+	issuer := certs[1]
 
 	server, responseBytes, err = ocsputil.GetOCSPResponse(targetCert, issuer)
 	assert.Nil(err)
@@ -146,11 +146,14 @@ func TestVerifyAuthorizedResponder(t *testing.T) {
 	currentTime := time.Now()
 
 	privKeyInfo, _ := x509util.ParsePrivateKeyFile("../test/testdata/pki/private/ca-intermediate-a-rsa-ocsp-responder.pem", nil)
-	responderCert, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/ca-intermediate-a-rsa-ocsp-responder.pem")
-	issuerCert, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/ca-intermediate-a-rsa.pem")
-	targetCert, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/server-a-rsa.pem")
+	responderCerts, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/ca-intermediate-a-rsa-ocsp-responder.pem")
+	responderCert := responderCerts[0]
+	issuerCerts, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/ca-intermediate-a-rsa.pem")
+	issuerCert := issuerCerts[0]
+	targetCerts, _ := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/server-a-rsa.pem")
+	targetCert := targetCerts[0]
 	intermediateCerts := []*x509.Certificate{issuerCert}
-	rootCerts, _ := x509util.ParseCertificateFiles("../test/testdata/pki/root-ca/ca-root.pem")
+	rootCerts, _ := x509util.ParseCertificateFile("../test/testdata/pki/root-ca/ca-root.pem")
 	rootCertPool, _ := x509util.GetRootCertPool(rootCerts, false)
 
 	priv := privKeyInfo.Key.(*rsa.PrivateKey)
@@ -288,7 +291,8 @@ func TestVerifyAuthorizedResponder(t *testing.T) {
 	//                     00:fe:6b:e6:fc:5a:21:e3:34:74:24:cc:73:fb:d4:
 	//                     ...(omitted)
 	//                 Exponent: 65537 (0x10001)
-	responderCert, _ = x509util.ParseCertificateFile("../test/testdata/pki/cert/expired/ca-intermediate-a-rsa-ocsp-responder.pem")
+	responderCerts, _ = x509util.ParseCertificateFile("../test/testdata/pki/cert/expired/ca-intermediate-a-rsa-ocsp-responder.pem")
+	responderCert = responderCerts[0]
 	template = ocsp.Response{
 		SerialNumber: targetCert.SerialNumber,
 		Certificate:  responderCert,

@@ -29,7 +29,7 @@ func TestNewKeyPairChecker(t *testing.T) {
 	assert.Nil(err)
 
 	rsaCertFile := "../test/testdata/pki/cert/valid/server-a-rsa.pem"
-	rsaCerts, _ := x509util.ParseCertificateFiles(rsaCertFile)
+	rsaCerts, _ := x509util.ParseCertificateFile(rsaCertFile)
 	rsaPubKeyInfo, err := x509util.ExtractPublicKeyFromCertificate(rsaCerts[0])
 	assert.Nil(err)
 
@@ -39,7 +39,7 @@ func TestNewKeyPairChecker(t *testing.T) {
 	assert.Nil(err)
 
 	ecdsaCertFile := "../test/testdata/pki/cert/valid/server-a-ecdsa.pem"
-	ecdsaCerts, _ := x509util.ParseCertificateFiles(ecdsaCertFile)
+	ecdsaCerts, _ := x509util.ParseCertificateFile(ecdsaCertFile)
 	ecdsaPubKeyInfo, err := x509util.ExtractPublicKeyFromCertificate(ecdsaCerts[0])
 	assert.Nil(err)
 
@@ -49,7 +49,7 @@ func TestNewKeyPairChecker(t *testing.T) {
 	assert.Nil(err)
 
 	ed25519CertFile := "../test/testdata/pki/cert/valid/server-a-ed25519.pem"
-	ed25519Certs, _ := x509util.ParseCertificateFiles(ed25519CertFile)
+	ed25519Certs, _ := x509util.ParseCertificateFile(ed25519CertFile)
 	ed25519PubKeyInfo, err := x509util.ExtractPublicKeyFromCertificate(ed25519Certs[0])
 	assert.Nil(err)
 
@@ -318,7 +318,7 @@ func TestKeyPairChecker(t *testing.T) {
 	assert.Nil(err)
 	rsaPubKeyInfoInPrivKey, err := x509util.ExtractPublicKeyFromPrivateKey(rsaPrivKeyInfo)
 	assert.Nil(err)
-	rsaCerts, err := x509util.ParseCertificateFiles("../test/testdata/pki/cert/valid/server-a-rsa.pem")
+	rsaCerts, err := x509util.ParseCertificateFile("../test/testdata/pki/cert/valid/server-a-rsa.pem")
 	assert.Nil(err)
 	rsaPubKeyInfo, err := x509util.ExtractPublicKeyFromCertificate(rsaCerts[0])
 	assert.Nil(err)

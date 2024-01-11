@@ -154,7 +154,7 @@ func NewCertificateFileInfo(name string, certFile string, parent *x509.Certifica
 	var errmsg string
 	var certInfoList []CertificateInfo
 
-	certs, err := x509util.ParseCertificateFiles(certFile)
+	certs, err := x509util.ParseCertificateFile(certFile)
 	if err != nil {
 		status = ERROR
 		errmsg = err.Error()

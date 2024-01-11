@@ -24,6 +24,9 @@ dist/
 # Certificates for test
 test/testdata/pki/cert/valid/*.pem
 test/testdata/pki/cert/valid/*.der
+test/testdata/pki/cert/valid/*.p7b
+test/testdata/pki/cert/valid/*.p12
+test/testdata/pki/cert/valid/*.pfx
 test/testdata/pki/chain/*.pem
 
 # Coverage

@@ -25,17 +25,17 @@ func TestNewValidityChecker(t *testing.T) {
 
 	// This certificate will expire in 365 days.
 	certFile := "../test/testdata/pki/cert/valid/server-a-rsa.pem"
-	certs, _ := x509util.ParseCertificateFiles(certFile)
+	certs, _ := x509util.ParseCertificateFile(certFile)
 	cert := certs[0]
 
 	// This certificate has expired.
 	expiredCertFile := "../test/testdata/pki/cert/expired/server-a-rsa.pem"
-	expiredCerts, _ := x509util.ParseCertificateFiles(expiredCertFile)
+	expiredCerts, _ := x509util.ParseCertificateFile(expiredCertFile)
 	expiredCert := expiredCerts[0]
 
 	// This certificate is not yet valid.
 	notYetValidCertFile := "../test/testdata/pki/cert/notyetvalid/server-a-rsa.pem"
-	notYetValidCerts, _ := x509util.ParseCertificateFiles(notYetValidCertFile)
+	notYetValidCerts, _ := x509util.ParseCertificateFile(notYetValidCertFile)
 	notYetValidCert := notYetValidCerts[0]
 
 	// OK: the certificate will expire in 365 days on 2022-06-22 16:10:14 +0900
@@ -121,7 +121,7 @@ func TestValidityChecker(t *testing.T) {
 
 	// This certificate will expire in 365 days.
 	certFile := "../test/testdata/pki/cert/valid/server-a-rsa.pem"
-	certs, _ := x509util.ParseCertificateFiles(certFile)
+	certs, _ := x509util.ParseCertificateFile(certFile)
 	cert := certs[0]
 
 	// OK: the certificate will expire in 365 days on 2022-06-22 16:10:14 +0900
